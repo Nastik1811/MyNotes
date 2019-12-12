@@ -3,4 +3,13 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="demo_card_text">Some text for material card demonstration</string>
+
+    <string name="button_save">Save</string>
+
+    <string name="empty_not_saved">Word not saved because it is empty.</string>
+    <string name="content">Content</string>
+    <string name="title">Title</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">note title</string>
 </resources>

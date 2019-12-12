@@ -5,12 +5,63 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.mynotes.db.dao.NoteDao
+import com.example.mynotes.db.dao.TagDao
+import com.example.mynotes.db.entity.Note
+import com.example.mynotes.db.entity.Tag
+import com.example.mynotes.db.entity.TagNoteCrossRef
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 @Database(entities = [Note::class, Tag::class, TagNoteCrossRef::class], version = 1,  exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class AppDb : RoomDatabase() {
-    abstract val noteDao: NoteDAO
-    abstract val tagDao: TagDAO
+    abstract fun noteDao(): NoteDao
+    abstract fun tagDao(): TagDao
+
+    private class NoteDatabaseCallback(
+        private val scope: CoroutineScope
+    ) : RoomDatabase.Callback() {
+
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
+            INSTANCE?.let { database ->
+                scope.launch {
+                    val noteDao = database.noteDao()
+                    val tagDao = database.tagDao()
+                    listOf(
+                        Note(1, title = "First note", content = "Hello world! "),
+                        Note(2, title = "Intent", content = "An Intent provides a facility for performing late " +
+                                "runtime binding between the code in different applications. Its most significant use is in the " +
+                                "launching of activities, where it can be thought of as the glue between activities. It is basically " +
+                                "a passive data structure holding an abstract description of an action to be performed."),
+                        Note(3, title = "Third note", content = "hello world")
+                    ).forEach{
+                        noteDao.addNote(it)
+                    }
+
+                    listOf(
+                        Tag(1, name = "android"),
+                        Tag(2, name = "tag1"),
+                        Tag(3, name = "tag2"),
+                        Tag(4, name = "tag3")
+                    ).forEach{
+                        tagDao.addTag(it)
+                    }
+
+                    listOf(
+                        TagNoteCrossRef(1, 2),
+                        TagNoteCrossRef(1, 3),
+                        TagNoteCrossRef(2, 1)
+                    ).forEach {
+                        noteDao.addTagToNote(it)
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
         /**
@@ -24,25 +75,8 @@ abstract class AppDb : RoomDatabase() {
          */
         @Volatile
         private var INSTANCE: AppDb? = null
-
-        /**
-         * Helper function to get the database.
-         *
-         * If a database has already been retrieved, the previous database will be returned.
-         * Otherwise, create a new database.
-         *
-         * This function is threadsafe, and callers should cache the result for multiple database
-         * calls to avoid overhead.
-         * @param context The application context Singleton, used to get access to the filesystem.
-         */
-
-        fun getInstance(context: Context): AppDb {
-            // Multiple threads can ask for the database at the same time, ensure we only initialize
-            // it once by using synchronized. Only one thread may enter a synchronized block at a
-            // time.
+        fun getInstance(context: Context, scope: CoroutineScope): AppDb {
             synchronized(this) {
-                // Copy the current value of INSTANCE to a local variable so Kotlin can smart cast.
-                // Smart cast is only available to local variables.
                 var instance = INSTANCE
 
                 if (instance == null) {
@@ -51,13 +85,13 @@ abstract class AppDb : RoomDatabase() {
                         AppDb::class.java,
                         "notes_db"
                     )
-                        .fallbackToDestructiveMigration()
+                        .allowMainThreadQueries()
+                        .addCallback(NoteDatabaseCallback(scope))
                         .build()
                     INSTANCE = instance
                 }
                 return instance
             }
         }
-
     }
 }

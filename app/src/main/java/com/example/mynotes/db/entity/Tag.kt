@@ -1,4 +1,4 @@
-package com.example.mynotes.db
+package com.example.mynotes.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,3 +10,8 @@ data class Tag (
     var tagId: Long = 0,
     var name: String
 )
+{
+    override fun toString(): String {
+        return "#$name"
+    }
+}

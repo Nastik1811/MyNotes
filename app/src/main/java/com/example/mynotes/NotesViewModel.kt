@@ -2,22 +2,25 @@ package com.example.mynotes
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.example.mynotes.db.AppDb
-import com.example.mynotes.db.Note
-import com.example.mynotes.db.NoteDAO
+import com.example.mynotes.db.entity.Note
+import com.example.mynotes.db.entity.NoteWithTags
+import com.example.mynotes.db.entity.Tag
+import kotlinx.coroutines.launch
 
-class NotesViewModel(
-    val database: AppDb,
-    application: Application
-): AndroidViewModel(application) {
+class NotesViewModel(application: Application): AndroidViewModel(application) {
 
+    private val repository: NotesRepository = NotesRepository(application, viewModelScope)
+    val notesWithTags: LiveData<List<NoteWithTags>>
+    val notes: LiveData<List<Note>>
+    val tags: List<Tag>
 
-    val notes = database.noteDao.getAllNotes()
-
-    fun addNewNote(){
-        val note = Note(title = "title1", content = "content")
+    init{
+        notesWithTags = repository.allNotesWithTags
+        notes = repository.allNotes
+        tags = repository.allTags
     }
-
-
 
 }

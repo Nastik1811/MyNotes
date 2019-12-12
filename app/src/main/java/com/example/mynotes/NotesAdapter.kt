@@ -1,37 +1,43 @@
 package com.example.mynotes
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mynotes.db.Note
-import kotlinx.android.synthetic.main.fragment_notes_item.view.*
+import com.example.mynotes.db.entity.Note
+import com.example.mynotes.db.entity.NoteWithTags
+import kotlinx.android.synthetic.main.note_item_view.view.*
 
-class NotesAdapter: RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
-    var notes = listOf<Note>()
+class NotesAdapter constructor(context: Context,  val clickListener: (Long) -> Unit): RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
 
-    set(value){
-        field=value
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
+    private var notes = listOf<NoteWithTags>()
+
+    internal fun setNotes(notes: List<NoteWithTags>){
+        this.notes = notes
         notifyDataSetChanged()
     }
 
     override fun getItemCount() = notes.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_notes_item, parent, false)
-        return ViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
+        val view = inflater.inflate(R.layout.note_item_view, parent, false)
+        return NoteViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val item = notes[position]
-        holder.titleView.text = item.title
-        holder.contentView.text = item.content
+        holder.bind(item, clickListener )
     }
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val titleView: TextView = view.title
-        val contentView: TextView = view.content
+    inner class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(noteWithTags: NoteWithTags, clickListener: (noteId: Long) -> Unit){
+            itemView.title.text = noteWithTags.note.title
+            itemView.content.text = noteWithTags.note.content
+            itemView.tags_line.text = noteWithTags.tags.joinToString (separator = " ")
+            itemView.setOnClickListener { clickListener(noteWithTags.note.noteId) }
+        }
     }
 }
