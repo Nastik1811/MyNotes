@@ -19,7 +19,9 @@ interface NoteDao{
     @Query("SELECT * FROM notes")
     fun getAllNotes(): LiveData<List<Note>>
 
-
+    @Transaction
+    @Query("SELECT * FROM notes WHERE noteId IN(SELECT noteId FROM TagNoteCrossRef WHERE tagId = (SELECT tagId from tags where name = :name))")
+    fun getNotesWithTag(name: String): LiveData<List<NoteWithTags>>
 
     @Insert
     suspend fun addNote(note: Note) : Long

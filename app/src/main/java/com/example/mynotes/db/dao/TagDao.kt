@@ -8,7 +8,10 @@ interface TagDao{
     @Query("SELECT * from tags")
     fun getAllTags(): List<Tag>
 
-    @Insert
+    @Query("SELECT * from tags WHERE name = :name")
+    fun getTagByName(name: String): Tag
+
+    @Insert()
     suspend fun addTag(tag: Tag)
 
     @Update
@@ -19,5 +22,7 @@ interface TagDao{
 
     @Query("DELETE FROM tags WHERE tagId >= 0")
     suspend fun deleteAllTags()
+
+
 
 }

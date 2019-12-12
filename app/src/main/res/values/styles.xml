@@ -41,15 +41,16 @@
         <item name="strokeColor">@color/colorPrimaryDark</item>
         <item name="strokeWidth">0.1dp</item>
         <item name="cardCornerRadius">5dp</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginLeft">14dp</item>
+        <item name="android:layout_marginRight">14dp</item>
     </style>
 
     <style name="ChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/colorChip</item>
         <item name="android:textColor">@color/colorText</item>
         <item name="textStartPadding">2dp</item>
+        <item name="android:height">10dp</item>
     </style>
 
     <attr name="CustomChipChoiceStyle" format="reference"/>

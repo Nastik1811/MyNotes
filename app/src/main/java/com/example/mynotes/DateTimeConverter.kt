@@ -6,7 +6,7 @@ import java.util.*
 class DateTimeConverter {
     companion object {
         fun getFormattedDate(date: Date): String {
-            val pattern = "yyyy-MM-dd HH:mm:ss"
+            val pattern = "dd/mm/yyyy HH:mm"
             val simpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
             return simpleDateFormat.format(date)
         }

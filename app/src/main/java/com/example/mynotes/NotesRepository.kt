@@ -30,6 +30,14 @@ class NotesRepository(application: Application, viewModelScope: CoroutineScope) 
         return noteDao.getNoteWithTags(id)
     }
 
+    fun getNotesWithSelectedTag(tagName: String): LiveData<List<NoteWithTags>>{
+        return noteDao.getNotesWithTag(tagName)
+    }
+
+    fun getTagByName(name: String): Tag{
+        return tagDao.getTagByName(name)
+    }
+
     suspend fun addNote(note: Note):Long {
         return noteDao.addNote(note)
     }
@@ -53,6 +61,8 @@ class NotesRepository(application: Application, viewModelScope: CoroutineScope) 
     suspend fun addTag(tag: Tag) {
         tagDao.addTag(tag)
     }
+
+
 
 
 }

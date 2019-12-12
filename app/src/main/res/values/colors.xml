@@ -4,9 +4,9 @@
     <color name="colorPrimaryDark">#010D00</color>>
 
     <color name="colorSecondary">#FFFFFF</color>
-    <color name="colorAccent">#363480</color>
+    <color name="colorAccent">#000000</color>
 
-    <color name="colorText">#251452</color>
+    <color name="colorText">#000000</color>
     <color name="colorNote">#FFFFFF</color>
     <color name="colorChip">#33FFE157</color>
 

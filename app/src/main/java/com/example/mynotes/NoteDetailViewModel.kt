@@ -16,7 +16,7 @@ class NoteDetailViewModel(noteId: Long, application: Application): AndroidViewMo
 
     private val repository: NotesRepository = NotesRepository(application, viewModelScope)
     private var openMode: OpenMode
-    var note: Note
+    val note: Note
     val tags: MutableList<Tag>
     val allTags: List<Tag>
 
@@ -43,12 +43,12 @@ class NoteDetailViewModel(noteId: Long, application: Application): AndroidViewMo
             OpenMode.UPDATE -> repository.updateNote(note)
             OpenMode.CREATE -> noteId = repository.addNote(note)
         }
-        tags.forEach{
+        tags.forEach {
             repository.addTagToNote(noteId, it.tagId)
         }
     }
 
-    fun removeTags() = viewModelScope.launch {
+    private fun removeTags() = viewModelScope.launch {
         tags.forEach {
             repository.removeTag(note.noteId, it.tagId)
         }
@@ -59,8 +59,15 @@ class NoteDetailViewModel(noteId: Long, application: Application): AndroidViewMo
         }
 
 
-    fun addTag(tag: Tag) = viewModelScope.launch {
-        tags.add(tag)
+    fun addTag(tag: Tag) : Boolean {
+        if(tag in tags) return false
+        else tags.add(tag)
+        return true
+    }
+
+    fun removeTag(tagName: String){
+        val tag = repository.getTagByName(tagName)
+        tags.removeAt(tags.indexOf(tag))
     }
 
 
