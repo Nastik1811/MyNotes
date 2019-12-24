@@ -10,7 +10,7 @@ import com.example.mynotes.db.entity.Note
 import com.example.mynotes.db.entity.NoteWithTags
 import kotlinx.android.synthetic.main.note_item_view.view.*
 
-class NotesAdapter constructor(context: Context,  val clickListener: (Long) -> Unit): RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
+class NotesAdapter constructor(context: Context, private val clickListener: (Long) -> Unit): RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private var notes = listOf<NoteWithTags>()

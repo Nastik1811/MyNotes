@@ -22,6 +22,7 @@ class NoteDetailActivity : AppCompatActivity() {
 
     lateinit var titleView: EditText
     lateinit var contentView: EditText
+    lateinit var creationDate: TextView
     lateinit var chipGroup: ChipGroup
     lateinit var tagAdder: AutoCompleteTextView
     private lateinit var detailViewModel: NoteDetailViewModel
@@ -32,6 +33,7 @@ class NoteDetailActivity : AppCompatActivity() {
 
         titleView = findViewById(R.id.title)
         contentView = findViewById(R.id.content)
+        creationDate = findViewById(R.id.creation_date)
         chipGroup = findViewById(R.id.tag_chips)
         tagAdder = findViewById(R.id.tag_adder)
 
@@ -46,8 +48,8 @@ class NoteDetailActivity : AppCompatActivity() {
             contentView.setText(detailViewModel.note.content)
             setTags(detailViewModel.tags)
         }
+        creationDate.text = detailViewModel.getDate()
         setTagAdder()
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -2,6 +2,7 @@ package com.example.mynotes
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mynotes.db.AppDb
 import com.example.mynotes.db.dao.NoteDao
@@ -17,13 +18,20 @@ class NotesRepository(application: Application, viewModelScope: CoroutineScope) 
     // A Repository manages queries and allows you to use multiple backends.
     // In the most common example, the Repository implements the logic for deciding
     // whether to fetch data from a network or use results cached in a local database.
-    val noteDao = AppDb.getInstance(application, viewModelScope).noteDao()
-    val tagDao = AppDb.getInstance(application, viewModelScope).tagDao()
+    private val noteDao = AppDb.getInstance(application, viewModelScope).noteDao()
+    private val tagDao = AppDb.getInstance(application, viewModelScope).tagDao()
 
+    fun getAllTags(): List<Tag>{
+        return tagDao.getAllTags()
+    }
 
-    val allNotesWithTags: LiveData<List<NoteWithTags>> = noteDao.getNotesWithTags()
-    val allNotes: LiveData<List<Note>> = noteDao.getAllNotes()
-    val allTags: List<Tag> = tagDao.getAllTags()
+    fun getAllNotesSortByTitle(): LiveData<List<NoteWithTags>> {
+        return noteDao.getAllNotesSortByTitle()
+    }
+
+    fun getAllNotesSortByDate(): LiveData<List<NoteWithTags>>{
+        return noteDao.getAllNotesSortByDate()
+    }
 
     fun getNoteWithTags(id: Long) : NoteWithTags
     {
@@ -60,6 +68,10 @@ class NotesRepository(application: Application, viewModelScope: CoroutineScope) 
 
     suspend fun addTag(tag: Tag) {
         tagDao.addTag(tag)
+    }
+
+    suspend fun deleteTag(tag: Tag){
+        tagDao.deleteTag(tag)
     }
 
 

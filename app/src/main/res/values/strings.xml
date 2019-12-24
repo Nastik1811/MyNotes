@@ -12,4 +12,5 @@
     <string name="title">Title</string>
     <string name="search_title">Search</string>
     <string name="search_hint">note title</string>
+    <string name="sort_title">Sort</string>
 </resources>

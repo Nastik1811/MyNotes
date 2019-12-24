@@ -33,7 +33,7 @@ class NoteDetailViewModel(noteId: Long, application: Application): AndroidViewMo
             tags = mutableListOf()
             openMode = OpenMode.CREATE
         }
-        allTags = repository.allTags
+        allTags = repository.getAllTags()
     }
 
     fun saveNote() = viewModelScope.launch {
@@ -68,6 +68,11 @@ class NoteDetailViewModel(noteId: Long, application: Application): AndroidViewMo
     fun removeTag(tagName: String){
         val tag = repository.getTagByName(tagName)
         tags.removeAt(tags.indexOf(tag))
+    }
+
+    fun getDate() : String
+    {
+        return DateTimeConverter.getFormattedDate(note.creationDate)
     }
 
 

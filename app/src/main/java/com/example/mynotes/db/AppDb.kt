@@ -44,9 +44,12 @@ abstract class AppDb : RoomDatabase() {
 
                     listOf(
                         Tag(1, name = "android"),
-                        Tag(2, name = "tag1"),
-                        Tag(3, name = "tag2"),
-                        Tag(4, name = "tag3")
+                        Tag(2, name = "home"),
+                        Tag(3, name = "entertainment"),
+                        Tag(4, name = "work"),
+                        Tag(5, name = "todo"),
+                        Tag(6, name = "important"),
+                        Tag(7, name = "ideas")
                     ).forEach{
                         tagDao.addTag(it)
                     }

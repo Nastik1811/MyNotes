@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -23,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var chipsGroup: ChipGroup
     private lateinit var notesViewModel: NotesViewModel
+    private lateinit var adapter: NotesAdapter
 
     private fun onNoteClicked(noteId: Long){
         editSelectedNote(noteId)
@@ -32,9 +35,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
         val recyclerView = binding.notesList
-        val adapter = NotesAdapter(this) { noteId: Long -> onNoteClicked(noteId)}
+
+        adapter = NotesAdapter(this) { noteId: Long -> onNoteClicked(noteId)}
         recyclerView.adapter = adapter
 
         if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
@@ -44,8 +47,9 @@ class MainActivity : AppCompatActivity() {
             recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         notesViewModel = ViewModelProvider(this).get(NotesViewModel::class.java)
-        val observer = Observer<List<NoteWithTags>>{ notes -> adapter.setNotes(notes) }
-        notesViewModel.notesWithTags.observe(this, Observer { notes -> notes?.let { adapter.setNotes(it) } })
+
+        notesViewModel.notesWithTags
+            .observe(this, Observer { notes ->  adapter.setNotes(notes)})
 
         binding.notesViewModel = notesViewModel
         binding.lifecycleOwner = this
@@ -57,18 +61,33 @@ class MainActivity : AppCompatActivity() {
 
         chipsGroup = binding.filterChips
         chipsGroup.isSingleSelection = true
+
         chipsGroup.setOnCheckedChangeListener{ chipGroup, id ->
             val chip = chipGroup.findViewById<Chip>(id)
             if (chip != null) {
                 val tagName = chipGroup.findViewById<Chip>(id).text.toString()
                 notesViewModel.getNotesWithSelectedTag(tagName)
-                        .observe(this, Observer { notes -> notes?.let { adapter.setNotes(it) } })
+                    .observe(this, Observer { notes ->  adapter.setNotes(notes)})
                 }
-            else notesViewModel.notesWithTags.observe(
-                    this,
-                    Observer { notes -> notes?.let { adapter.setNotes(it) } })
+            else notesViewModel.notesWithTags
+                .observe(this, Observer { notes ->  adapter.setNotes(notes)})
         }
         setTags()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.sort) {
+            notesViewModel.sort()
+                .observe(this, Observer { notes ->  adapter.setNotes(notes)})
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun editSelectedNote(id: Long){
@@ -99,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         ).toInt()
         chip.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
         chip.text = name
-        chip.setOnCheckedChangeListener { buttonView, isChecked ->
+        chip.setOnCheckedChangeListener { _, isChecked ->
             if(chip.isChecked) chip.setChipBackgroundColorResource(R.color.colorPrimary)
         else chip.setChipBackgroundColorResource(R.color.colorChip)}
         chipsGroup.addView(chip as View)
